@@ -6,6 +6,8 @@ from django.views import View
 from redis_ratelimit import ratelimit
 from redis_ratelimit.exceptions import RateLimited
 from redis_ratelimit.utils import parse_rate
+from redis_ratelimit.decorators import ignore_redis_errors
+from redis.exceptions import RedisError
 
 factory = RequestFactory()
 
@@ -70,3 +72,20 @@ class RateLimitTests(TestCase):
             with self.assertRaises(RateLimited):
                 req = factory.get('/')
                 Cbv.as_view()(req)
+
+
+class IgnoreRedisErrorsTest(TestCase):
+    def test_invokes_function(self):
+        @ignore_redis_errors
+        def fake_rate_limited():
+            return True
+
+        assert fake_rate_limited()
+
+
+    def test_error(self):
+        @ignore_redis_errors
+        def fake_rate_limited():
+            raise RedisError
+
+        assert fake_rate_limited() == False

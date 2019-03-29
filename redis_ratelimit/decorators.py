@@ -6,17 +6,33 @@ from django.http import HttpRequest
 
 from redis_ratelimit.exceptions import RateLimited
 from redis_ratelimit.utils import parse_rate, build_redis_key
+from redis.exceptions import RedisError
 
 
+def ignore_redis_errors(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except RedisError:
+            return False
+    return wrapped
+
+
+
+def redis_connection():
+    db_url = getattr(settings, 'REDIS_RATELIMIT_DB_URL', "redis://localhost:6379/0")
+    return redis.from_url(db_url)
+
+
+@ignore_redis_errors
 def is_rate_limited(request, rate=None):
     if not rate:
         return False
 
     count, seconds = parse_rate(rate)
     redis_key = build_redis_key(request, count, seconds)
-
-    db_url = getattr(settings, 'REDIS_RATELIMIT_DB_URL', "redis://localhost:6379/0")
-    r = redis.from_url(db_url)
+    r = redis_connection()
 
     current = r.get(redis_key)
     if current:
@@ -29,6 +45,7 @@ def is_rate_limited(request, rate=None):
         r.expire(redis_key, seconds)
 
     return False
+
 
 
 def ratelimit(rate=None):
