@@ -82,7 +82,6 @@ class IgnoreRedisErrorsTest(TestCase):
 
         assert fake_rate_limited()
 
-
     def test_error(self):
         @ignore_redis_errors
         def fake_rate_limited():

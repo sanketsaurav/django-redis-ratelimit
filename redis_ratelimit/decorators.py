@@ -16,8 +16,8 @@ def ignore_redis_errors(f):
             return f(*args, **kwargs)
         except RedisError:
             return False
-    return wrapped
 
+    return wrapped
 
 
 def redis_connection():
@@ -47,7 +47,6 @@ def is_rate_limited(request, rate=None):
     return False
 
 
-
 def ratelimit(rate=None):
     def decorator(f):
         @wraps(f)
@@ -60,5 +59,7 @@ def ratelimit(rate=None):
             if is_rate_limited(request, rate=rate):
                 raise RateLimited("Too Many Requests")
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator

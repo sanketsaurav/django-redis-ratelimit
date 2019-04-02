@@ -1,5 +1,6 @@
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
+
 # To use a consistent encoding
 from codecs import open
 from os import path
@@ -30,4 +31,5 @@ setup(
     keywords='django redis rate-limit ratelimit',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=['Django==1.11.5', 'redis'],
+    extras_require={"dev": ["black==19.3b0"]},
 )

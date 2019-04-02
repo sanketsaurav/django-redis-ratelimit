@@ -6,12 +6,7 @@ from django.core.urlresolvers import resolve
 
 rate_re = re.compile('([\d]+)/([\d]*)([smhd])')
 
-UNITS = {
-    's': 1,
-    'm': 60,
-    'h': 60 * 60,
-    'd': 24 * 60 * 60
-}
+UNITS = {'s': 1, 'm': 60, 'h': 60 * 60, 'd': 24 * 60 * 60}
 
 
 def parse_rate(rate):
