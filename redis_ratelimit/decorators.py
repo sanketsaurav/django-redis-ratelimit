@@ -22,7 +22,8 @@ def ignore_redis_errors(f):
 
 def redis_connection():
     db_url = getattr(settings, 'REDIS_RATELIMIT_DB_URL', "redis://localhost:6379/0")
-    return redis.from_url(db_url)
+    timeout = float(getattr(settings, 'REDIS_RATELIMIT_DB_TIMEOUT', "0.1"))
+    return redis.from_url(db_url, socket_timeout=timeout)
 
 
 @ignore_redis_errors

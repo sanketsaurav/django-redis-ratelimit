@@ -7,7 +7,7 @@ from redis_ratelimit import ratelimit
 from redis_ratelimit.exceptions import RateLimited
 from redis_ratelimit.utils import parse_rate
 from redis_ratelimit.decorators import ignore_redis_errors
-from redis.exceptions import RedisError
+from redis.exceptions import TimeoutError
 
 factory = RequestFactory()
 
@@ -85,6 +85,6 @@ class IgnoreRedisErrorsTest(TestCase):
     def test_error(self):
         @ignore_redis_errors
         def fake_rate_limited():
-            raise RedisError
+            raise TimeoutError
 
         assert fake_rate_limited() == False
